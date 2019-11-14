@@ -6,6 +6,7 @@ Board also supports circuitpython and micropython.
 
 Files | Description
 ---|---
+adcdma.ino | free-running ADC (A2) with DMA
 adcinternal.ino  |   VBAT, VREF, temperature 
 crc.ino | hardware CRC
 dacdmahal.ino | timer controlled DAC output with circular DMA
