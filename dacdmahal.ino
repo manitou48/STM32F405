@@ -1,4 +1,4 @@
-// 405 DAC  TIM6 double-buffered DMA using HAL from pyboard stmhal/dac.c
+// 405 DAC  TIM6 circular DMA using HAL from pyboard stmhal/dac.c
 // A0 DAC1  TIM6  DMA chnl 7 stream 5
 // observe A0 with scope, or jumper to an ADC pin and sample
 
@@ -110,10 +110,8 @@ void setup() {
   HAL_DAC_ConfigChannel(&DAC_Handle, &config, DAC_CHANNEL_1);
   HAL_DAC_Start_DMA(&DAC_Handle, DAC_CHANNEL_1,
                     (uint32_t*)sinetable, sizeof(sinetable) / 2, DAC_ALIGN_12B_R);
-
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
 
 }
