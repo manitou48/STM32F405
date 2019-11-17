@@ -16,6 +16,9 @@ rtc.ino |  RTC tests
 spiperf.ino | SPI2 DMA
 
 --------
+Some CoreMark comparisons at various clock speeds. To change
+frequency on STM32F405, modified
+PLLN and PLLP in variants/FEATHER_F405/variant.cpp.
 ![coremark](405t3.png)
 ![coremark power](405t3a.png)
 
