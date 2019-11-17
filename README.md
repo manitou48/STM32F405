@@ -16,6 +16,9 @@ rtc.ino |  RTC tests
 spiperf.ino | SPI2 DMA
 
 --------
+![coremark](405t3.png)
+![coremark power](405t3a.png)
+
 Some performance comparisons at
 
    https://github.com/manitou48/DUEZoo
