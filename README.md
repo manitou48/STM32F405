@@ -12,6 +12,7 @@ crc.ino | hardware CRC
 dacdmahal.ino | timer controlled DAC output with circular DMA
 mem2mem.ino | memory-to-memory DMA
 rng.ino | hardware random number generator
+rnghal.ino | HAL version hardware random number generator
 rtc.ino |  RTC tests
 spiperf.ino | SPI2 DMA
 
