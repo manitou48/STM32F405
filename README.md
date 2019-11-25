@@ -11,6 +11,7 @@ adcinternal.ino  |   VBAT, VREF, temperature
 crc.ino | hardware CRC
 dacdmahal.ino | timer controlled DAC output with circular DMA
 mem2mem.ino | memory-to-memory DMA
+freqcount.ino | count external pulses
 rng.ino | hardware random number generator
 rnghal.ino | HAL version hardware random number generator
 rtc.ino |  RTC tests
