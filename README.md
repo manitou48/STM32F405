@@ -8,6 +8,7 @@ Files | Description
 ---|---
 adcdma.ino | free-running ADC (A2) with DMA
 adcinternal.ino  |   VBAT, VREF, temperature 
+capturedma.ino | TIM2 capture, sampling mode, DMA TBD
 chain.ino | chain 16-bit timers for 32-bit
 crc.ino | hardware CRC
 dacdmahal.ino | timer controlled DAC output with circular DMA
