@@ -1,11 +1,67 @@
 // stm32f405 test version pre RTC software
+//  RTC alarm A B  on EXTI line 17
 
-#define RTC                 ((RTC_TypeDef *) RTC_BASE)
 #define PRREG(x) Serial.print(#x" 0x"); Serial.println(x,HEX)
 
 #define RTC_TR_RESERVED_MASK    ((uint32_t)0x007F7F7F)
 
 #define RTC_INIT_MASK           ((uint32_t)0xFFFFFFFF)
+#define BYTE2BCD(byte)      ((byte % 10) | ((byte / 10) << 4))
+#define BCD2BYTE(byte)      ((byte & 0x0f) + 10*((byte >> 4) & 0x0f))
+static int secsinc;  // interrupt every secsinc seconds
+
+volatile uint32_t ticks;
+
+extern "C" void RTC_Alarm_IRQHandler(void) {
+  // both A and B
+  if (RTC->ISR & RTC_ISR_ALRAF) {
+    ticks++;
+    RTC->ISR &= (uint32_t)~RTC_ISR_ALRAF;   // clear wakeup
+    EXTI->PR |= EXTI_PR_PR17;
+    // update target time
+    /* Disable the write protection for RTC registers */
+    RTC->WPR = 0xCA;
+    RTC->WPR = 0x53;
+    int secs = BCD2BYTE(RTC->ALRMAR);
+    int bcdsecs = BYTE2BCD((secs + secsinc) % 60);
+
+    RTC->CR &= ~(RTC_CR_ALRAIE | RTC_CR_ALRAE);  // clear
+    while ((RTC->ISR & RTC_ISR_ALRAWF)  == 0);  // wait
+    RTC->ALRMAR = RTC_ALRMAR_MSK4  | RTC_ALRMAR_MSK3 | RTC_ALRMAR_MSK2 | bcdsecs;
+    RTC->CR |= RTC_CR_ALRAE | RTC_CR_ALRAIE ;   // enable  ALARM A
+    RTC->WPR = 0xff; //  enable write protection
+  }
+}
+
+void alarm_init(int secs) {
+  /* Disable the write protection for RTC registers */
+  secsinc = secs % 60;
+  RTC->WPR = 0xCA;
+  RTC->WPR = 0x53;
+
+  __disable_irq();         // no interrupts
+  //  enable wakeup
+  EXTI->PR |= EXTI_PR_PR17;    // clear
+  EXTI->IMR |= EXTI_IMR_MR17;      // line 17 RTC ALARM EXTI
+  EXTI->RTSR |= EXTI_RTSR_TR17;   // rising
+
+  RTC->CR &= ~(RTC_CR_ALRAIE | RTC_CR_ALRAE);  // clear
+  while ((RTC->ISR & RTC_ISR_ALRAWF)  == 0);  // wait
+  // configure A ALARM  secsinc from now
+  int bcdsecs = BYTE2BCD((rtc_ms() / 1000 + secsinc) % 60);
+  RTC->ALRMAR = RTC_ALRMAR_MSK4  | RTC_ALRMAR_MSK3 | RTC_ALRMAR_MSK2 | bcdsecs;
+  RTC->CR |= RTC_CR_ALRAE | RTC_CR_ALRAIE ;   // enable  ALARM A
+
+  RTC->WPR = 0xff; //  enable write protection
+
+  __enable_irq();         //Alarm is set, so irqs can be enabled again
+
+  NVIC_DisableIRQ(RTC_Alarm_IRQn);
+  NVIC_ClearPendingIRQ(RTC_Alarm_IRQn);
+  // NVIC_SetPriority(RTC_Alarm_IRQn,0);
+  NVIC_EnableIRQ(RTC_Alarm_IRQn);
+}
+
 
 uint32_t rtc_ms() {
   uint32_t ms, tmpreg, SSticks = (RTC->PRER & RTC_PRER_PREDIV_S) + 1;
@@ -44,7 +100,7 @@ void rtc_init() {
   // optional calibration
 #if 1
   RTC->CR |= RTC_CR_DCE;
-  RTC->CALIBR = 0x80 | 39;  // -78 ppm
+  RTC->CALIBR = 0x80 | 31;  //  max is -62 ppm
 #endif
 
   // exit init mode
@@ -105,21 +161,7 @@ void setup() {
   // PRREG(PWR->CR);
 
   rtc_init();
-#if 0
-  PRREG(RTC->TR);
-  PRREG(RTC->DR);
-  PRREG(RTC->SSR);
-  PRREG(RTC->ISR);
-  PRREG(RTC->CR);
-  PRREG(RTC->PRER);
-  PRREG(RCC->BDCR);
-  PRREG(RCC->CSR);
-  delay(3000);
-  PRREG(RTC->TR);
-  PRREG(RTC->DR);
-  PRREG(RTC->SSR);
-  PRREG(RTC->ISR);
-#endif
+
 }
 
 void logger() {
@@ -140,15 +182,35 @@ void logger() {
 
 void display() {
   uint32_t ms;
+  char str[64];
 
+  alarm_init(3);   // RTC alarm every 3 seconds
+
+#if 1
+  PRREG(RTC->TR);
+  PRREG(RTC->DR);
+  PRREG(RTC->SSR);
+  PRREG(RTC->ISR);
+  PRREG(RTC->CR);
+  PRREG(RTC->PRER);
+  PRREG(RTC->CALIBR);
+  PRREG(RCC->BDCR);
+  PRREG(RCC->CSR);
+  delay(3000);
+  PRREG(RTC->TR);
+  PRREG(RTC->DR);
+  PRREG(RTC->SSR);
+  PRREG(RTC->ISR);
+#endif
   while (1) {
     ms = rtc_ms();
-    Serial.println(ms);
+    sprintf(str, "%d ticks %lu ms", ticks, ms);
+    Serial.println(str);
     delay(5000);
   }
 }
 
 void loop() {
-  logger();
-  //display();
+  //logger();
+  display();
 }
