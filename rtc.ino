@@ -41,6 +41,12 @@ void rtc_init() {
   RTC->TR = 0;
   RTC->CR |= RTC_CR_BYPSHAD;   // need do-while if set ?
 
+  // optional calibration
+#if 1
+  RTC->CR |= RTC_CR_DCE;
+  RTC->CALIBR = 0x80 | 39;  // -78 ppm
+#endif
+
   // exit init mode
   RTC->ISR &= (uint32_t)~RTC_ISR_INIT;
   //  enable write protection
@@ -57,9 +63,9 @@ void rtc_init() {
 void initLSI() {
 #if 0
   // setup LSI for RTC use   no HAL support
-  PRREG(PWR->CR1);
-  PRREG(RCC->CSR);
-  PRREG(RCC->BDCR);
+
+  // PRREG(RCC->CSR);
+  // PRREG(RCC->BDCR);
   RCC->CSR |= RCC_LSI_ON;
   while ((RCC->CSR & RCC_LSI_RDY ) == 0) ;
 
@@ -69,9 +75,8 @@ void initLSI() {
 
   RCC->BDCR = (RCC->BDCR & ~RCC_BDCR_RTCSEL) | RCC_RTCCLKSOURCE_LSI;
 
-  PRREG(PWR->CR1);
-  PRREG(RCC->CSR);
-  PRREG(RCC->BDCR);
+  // PRREG(RCC->CSR);
+  //  PRREG(RCC->BDCR);
 #else
   // re enable LSE
   // RCC->BDCR |= RCC_BDCR_BDRST;
@@ -88,16 +93,16 @@ void setup() {
   while (!Serial);
   pinMode(13, OUTPUT);
   delay(5500);
- // PRREG(RCC->BDCR);
- // PRREG(PWR->CR);
+  // PRREG(RCC->BDCR);
+  // PRREG(PWR->CR);
   PWR->CR |= PWR_CR_DBP;
   RCC->BDCR |= RCC_BDCR_BDRST;
   RCC->BDCR &= ~RCC_BDCR_BDRST;
   RCC->BDCR = (RCC->BDCR & ~RCC_BDCR_RTCSEL) | RCC_BDCR_RTCSEL_0 | RCC_BDCR_LSEON;
   initLSI();
   RCC->BDCR |= RCC_BDCR_RTCEN;   // enable RTC
- // PRREG(RCC->BDCR);
- // PRREG(PWR->CR);
+  // PRREG(RCC->BDCR);
+  // PRREG(PWR->CR);
 
   rtc_init();
 #if 0
@@ -144,6 +149,6 @@ void display() {
 }
 
 void loop() {
-   logger();
+  logger();
   //display();
 }
