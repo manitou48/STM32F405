@@ -12,6 +12,7 @@ capturedma.ino | TIM2 capture, sampling mode, DMA TBD
 chain.ino | chain 16-bit timers for 32-bit
 crc.ino | hardware CRC
 dacdmahal.ino | timer controlled DAC output with circular DMA
+dacdmapong.ino | timer controlled DAC output with double-buffered DMA
 mem2mem.ino | memory-to-memory DMA
 freqcount.ino | count external pulses
 rng.ino | hardware random number generator
