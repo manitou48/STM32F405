@@ -2,7 +2,7 @@
 // A0 DAC1  TIM6  DMA1 chnl 7 stream 5
 // observe DAC1 with scope, or jumper to an ADC pin and sample
 // double-buffer ping pong  half full interrupts
-// another options is wit DBM and two addresses  TODO
+// another options is with DBM and two addresses  TODO
 // i couldn't figure out HAL methods
 
 #define PRREG(x) Serial.print(#x" 0x"); Serial.println(x,HEX)
@@ -34,10 +34,10 @@ extern "C" void DMA1_Stream5_IRQHandler()
 {
   ticks++;
   if (DMA1->HISR & DMA_HISR_TCIF5) {
-    // half-done interrupt, could update first half of buffer
+    // complete interrupt, could update 2nd half of buffer
     digitalWrite(13, HIGH);
   } else {
-    // complete interrupt, could update 2nd half of buffer
+    // half-complete interrupt, could update first half of buffer
     digitalWrite(13, LOW);
   }
   DMA1->HIFCR |= DMA_HIFCR_CTCIF5 | DMA_HIFCR_CHTIF5;  // clear stream 5
@@ -131,6 +131,9 @@ void setup() {
   // Need to deinit DMA first
   DMA_Handle.State = HAL_DMA_STATE_READY;
   HAL_DMA_DeInit(&DMA_Handle);
+  PRREG(DMA1_Stream5->CR);
+  PRREG(DMA1->HISR);
+  PRREG(DMA1->HIFCR);
 
   DMA_Handle.Init.Channel = DMA_CHANNEL_7;
   DMA_Handle.Init.Direction = DMA_MEMORY_TO_PERIPH;
