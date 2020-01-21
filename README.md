@@ -32,7 +32,7 @@ Some performance comparisons at
 
    https://github.com/manitou48/DUEZoo
 
-pin toggle period (us) and floating point benchmarks
+circuitpython pin toggle period (us) and floating point benchmarks
 ```
            sinperf   fact   llutm  toggle   raytrace(32x32)
 		   pyboard     13679    2129    1593    13.9 us   5.384 s     micropython
