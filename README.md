@@ -35,7 +35,8 @@ Some performance comparisons at
 circuitpython pin toggle period (us) and floating point benchmarks
 ```
            sinperf   fact   llutm  toggle   raytrace(32x32)
-pyboard     13679    2129    1593    13.9 us   5.384 s     micropython
+pyboard     13679    2129    1593    13.9 us   5.384 s   micropython v1.5
+STM32F405   13114    1885    1984              5.123 s   micropython v1.11
 STM32F405   59997    9995    5005    38.4     24.636 s   circuitpython
 M4          21973    4028    1984    21.4     10.785 s
 T4          31006    3662    5371    43.6     13.178 s
