@@ -51,3 +51,8 @@ Reference
 
 ![coremark](corembed.png)
 ![coremark power](corembeda.png)
+
+pico coremark:
+
+![coremark](pico.png)
+![coremark power](picoa.png)
