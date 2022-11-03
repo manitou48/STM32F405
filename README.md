@@ -48,5 +48,6 @@ Reference
 
 --------------
   Other mbed coremark plots:
+
 ![coremark](corembed.png)
 ![coremark power](corembeda.png)
