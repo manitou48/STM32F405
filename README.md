@@ -45,3 +45,8 @@ T4          31006    3662    5371    43.6     13.178 s
 ```
 Reference
   https://www.adafruit.com/product/4382 
+
+--------------
+  Other mbed coremark plots:
+![coremark](corembed.png)
+![coremark power](corembeda.png)
