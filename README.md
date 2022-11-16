@@ -56,3 +56,6 @@ pico coremark:
 
 ![coremark](pico.png)
 ![coremark power](picoa.png)
+
+http://manitou48.github.io/ more plots
+
